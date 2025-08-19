@@ -1,36 +1,20 @@
-// api/submit.js
 export default async function handler(req, res) {
-  // --- CORS ---
+  // Izinkan CORS
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
-  // Preflight
+  // Tangani preflight (OPTIONS)
   if (req.method === "OPTIONS") {
-    res.status(200).end();
-    return;
+    return res.status(200).end();
   }
 
-  if (req.method !== "POST") {
-    res.status(405).json({ success: false, error: "Method Not Allowed" });
-    return;
+  if (req.method === "POST") {
+    const { name, phone } = req.body;
+
+    // contoh respon dulu
+    return res.status(200).json({ success: true, name, phone });
   }
 
-  // Parsing body
-  let body = req.body;
-  if (typeof body === "string") {
-    try { body = JSON.parse(body); } catch (e) {}
-  }
-
-  const { nama, hp } = body || {};
-  if (!nama || !hp) {
-    res.status(400).json({ success: false, error: "Field 'nama' & 'hp' wajib" });
-    return;
-  }
-
-  // Sementara: log ke server (cek di Vercel Logs)
-  console.log("Data diterima:", { nama, hp });
-
-  // TODO berikutnya: tulis ke Google Sheet
-  res.status(200).json({ success: true, message: "Data diterima di backend" });
+  return res.status(405).json({ success: false, error: "Method Not Allowed" });
 }
